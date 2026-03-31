@@ -187,31 +187,35 @@ impl Processor<ListErc20PendingDeposits> for DatabaseProcessor {
         &self,
         query: ListErc20PendingDeposits,
     ) -> Result<Vec<Erc20PendingDeposit>, sqlx::Error> {
-        let mut qb = sqlx::QueryBuilder::new(
-            r#"SELECT id, "order", token_name, chain, user_address, wallet_address, value, started_at, last_scanned_at FROM erc20_pending_deposits WHERE true"#,
-        );
-
-        if let Some(order_id) = &query.order_id {
-            qb.push(r#" AND "order" = "#);
-            qb.push_bind(*order_id);
-        }
-        if let Some(chain) = &query.chain {
-            qb.push(" AND chain = ");
-            qb.push_bind(*chain);
-        }
-        if let Some(token) = &query.token {
-            qb.push(" AND token_name = ");
-            qb.push_bind(*token);
-        }
-
-        qb.push(" ORDER BY started_at DESC LIMIT ");
-        qb.push_bind(query.limit);
-        qb.push(" OFFSET ");
-        qb.push_bind(query.offset);
-
-        qb.build_query_as::<Erc20PendingDeposit>()
-            .fetch_all(&self.pool)
-            .await
+        sqlx::query_as!(
+            Erc20PendingDeposit,
+            r#"
+            SELECT
+                id,
+                "order",
+                token_name as "token_name: StablecoinName",
+                chain as "chain: EtherScanChain",
+                user_address,
+                wallet_address,
+                value,
+                started_at,
+                last_scanned_at
+            FROM erc20_pending_deposits
+            WHERE ($1::uuid IS NULL OR "order" = $1)
+              AND ($2::etherscan_chain IS NULL OR chain = $2)
+              AND ($3::stablecoin_name IS NULL OR token_name = $3)
+            ORDER BY started_at DESC
+            LIMIT $4
+            OFFSET $5
+            "#,
+            query.order_id as Option<uuid::Uuid>,
+            query.chain as Option<EtherScanChain>,
+            query.token as Option<StablecoinName>,
+            query.limit,
+            query.offset,
+        )
+        .fetch_all(&self.pool)
+        .await
     }
 }
 
