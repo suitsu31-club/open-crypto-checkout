@@ -1,0 +1,140 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT\n                id,\n                token_name as \"token_name: StablecoinName\",\n                from_address,\n                to_address,\n                txn_hash,\n                value,\n                block_number,\n                block_timestamp,\n                blockchain_confirmed,\n                created_at,\n                status as \"status: TransferStatus\",\n                fulfillment_id\n            FROM trc20_token_transfers\n            WHERE to_address = $1\n              AND ($2::transfer_status IS NULL OR status = $2)\n              AND ($3::stablecoin_name IS NULL OR token_name = $3)\n            ORDER BY created_at DESC\n            LIMIT $4\n            OFFSET $5\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 1,
+        "name": "token_name: StablecoinName",
+        "type_info": {
+          "Custom": {
+            "name": "stablecoin_name",
+            "kind": {
+              "Enum": [
+                "usdt",
+                "usdc",
+                "dai"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 2,
+        "name": "from_address",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "to_address",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "txn_hash",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "value",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 6,
+        "name": "block_number",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 7,
+        "name": "block_timestamp",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 8,
+        "name": "blockchain_confirmed",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 9,
+        "name": "created_at",
+        "type_info": "Timestamp"
+      },
+      {
+        "ordinal": 10,
+        "name": "status: TransferStatus",
+        "type_info": {
+          "Custom": {
+            "name": "transfer_status",
+            "kind": {
+              "Enum": [
+                "waiting_for_confirmation",
+                "failed_to_confirm",
+                "waiting_for_match",
+                "no_matched_deposit",
+                "matched"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 11,
+        "name": "fulfillment_id",
+        "type_info": "Int8"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Text",
+        {
+          "Custom": {
+            "name": "transfer_status",
+            "kind": {
+              "Enum": [
+                "waiting_for_confirmation",
+                "failed_to_confirm",
+                "waiting_for_match",
+                "no_matched_deposit",
+                "matched"
+              ]
+            }
+          }
+        },
+        {
+          "Custom": {
+            "name": "stablecoin_name",
+            "kind": {
+              "Enum": [
+                "usdt",
+                "usdc",
+                "dai"
+              ]
+            }
+          }
+        },
+        "Int8",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      false,
+      true
+    ]
+  },
+  "hash": "fecf08aba65bea44b0e64b61536d2ff7f53c487fc56512dd73646e44c9909610"
+}

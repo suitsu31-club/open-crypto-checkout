@@ -121,27 +121,32 @@ impl Processor<ListTrc20PendingDeposits> for DatabaseProcessor {
         &self,
         query: ListTrc20PendingDeposits,
     ) -> Result<Vec<Trc20PendingDeposit>, sqlx::Error> {
-        let mut qb = sqlx::QueryBuilder::new(
-            r#"SELECT id, "order", token_name, user_address, wallet_address, value, started_at, last_scanned_at FROM trc20_pending_deposits WHERE true"#,
-        );
-
-        if let Some(order_id) = &query.order_id {
-            qb.push(r#" AND "order" = "#);
-            qb.push_bind(*order_id);
-        }
-        if let Some(token) = &query.token {
-            qb.push(" AND token_name = ");
-            qb.push_bind(*token);
-        }
-
-        qb.push(" ORDER BY started_at DESC LIMIT ");
-        qb.push_bind(query.limit);
-        qb.push(" OFFSET ");
-        qb.push_bind(query.offset);
-
-        qb.build_query_as::<Trc20PendingDeposit>()
-            .fetch_all(&self.pool)
-            .await
+        sqlx::query_as!(
+            Trc20PendingDeposit,
+            r#"
+            SELECT
+                id,
+                "order",
+                token_name as "token_name: StablecoinName",
+                user_address,
+                wallet_address,
+                value,
+                started_at,
+                last_scanned_at
+            FROM trc20_pending_deposits
+            WHERE ($1::uuid IS NULL OR "order" = $1)
+              AND ($2::stablecoin_name IS NULL OR token_name = $2)
+            ORDER BY started_at DESC
+            LIMIT $3
+            OFFSET $4
+            "#,
+            query.order_id as Option<uuid::Uuid>,
+            query.token as Option<StablecoinName>,
+            query.limit,
+            query.offset,
+        )
+        .fetch_all(&self.pool)
+        .await
     }
 }
 

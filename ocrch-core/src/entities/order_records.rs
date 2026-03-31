@@ -283,29 +283,33 @@ impl Processor<ListOrderRecords> for DatabaseProcessor {
     type Error = sqlx::Error;
     #[tracing::instrument(skip_all, err, name = "SQL:ListOrderRecords")]
     async fn process(&self, query: ListOrderRecords) -> Result<Vec<OrderRecord>, sqlx::Error> {
-        let mut qb = sqlx::QueryBuilder::new(
-            "SELECT order_id, merchant_order_id, amount, created_at, \
-             status, webhook_success_at, webhook_url, webhook_retry_count, \
-             webhook_last_tried_at FROM order_records WHERE true",
-        );
-
-        if let Some(status) = &query.status {
-            qb.push(" AND status = ");
-            qb.push_bind(*status);
-        }
-        if let Some(mid) = &query.merchant_order_id {
-            qb.push(" AND merchant_order_id = ");
-            qb.push_bind(mid.clone());
-        }
-
-        qb.push(" ORDER BY created_at DESC LIMIT ");
-        qb.push_bind(query.limit);
-        qb.push(" OFFSET ");
-        qb.push_bind(query.offset);
-
-        qb.build_query_as::<OrderRecord>()
-            .fetch_all(&self.pool)
-            .await
+        sqlx::query_as!(
+            OrderRecord,
+            r#"
+            SELECT
+                order_id,
+                merchant_order_id,
+                amount,
+                created_at,
+                status as "status: OrderStatus",
+                webhook_success_at,
+                webhook_url,
+                webhook_retry_count,
+                webhook_last_tried_at
+            FROM order_records
+            WHERE ($1::order_status IS NULL OR status = $1)
+              AND ($2::text IS NULL OR merchant_order_id = $2)
+            ORDER BY created_at DESC
+            LIMIT $3
+            OFFSET $4
+            "#,
+            query.status as Option<OrderStatus>,
+            query.merchant_order_id as Option<String>,
+            query.limit,
+            query.offset,
+        )
+        .fetch_all(&self.pool)
+        .await
     }
 }
 

@@ -340,34 +340,41 @@ impl Processor<ListErc20TransfersByWallet> for DatabaseProcessor {
         &self,
         query: ListErc20TransfersByWallet,
     ) -> Result<Vec<Erc20TokenTransfer>, sqlx::Error> {
-        let mut qb = sqlx::QueryBuilder::new(
-            "SELECT id, token_name, chain, from_address, to_address, txn_hash, value, \
-             block_number, block_timestamp, blockchain_confirmed, created_at, status, \
-             fulfillment_id FROM erc20_token_transfers WHERE to_address = ",
-        );
-        qb.push_bind(&query.wallet_address);
-
-        if let Some(status) = &query.status {
-            qb.push(" AND status = ");
-            qb.push_bind(*status);
-        }
-        if let Some(chain) = &query.chain {
-            qb.push(" AND chain = ");
-            qb.push_bind(*chain);
-        }
-        if let Some(token) = &query.token {
-            qb.push(" AND token_name = ");
-            qb.push_bind(*token);
-        }
-
-        qb.push(" ORDER BY created_at DESC LIMIT ");
-        qb.push_bind(query.limit);
-        qb.push(" OFFSET ");
-        qb.push_bind(query.offset);
-
-        qb.build_query_as::<Erc20TokenTransfer>()
-            .fetch_all(&self.pool)
-            .await
+        sqlx::query_as!(
+            Erc20TokenTransfer,
+            r#"
+            SELECT
+                id,
+                token_name as "token_name: StablecoinName",
+                chain as "chain: EtherScanChain",
+                from_address,
+                to_address,
+                txn_hash,
+                value,
+                block_number,
+                block_timestamp,
+                blockchain_confirmed,
+                created_at,
+                status as "status: TransferStatus",
+                fulfillment_id
+            FROM erc20_token_transfers
+            WHERE to_address = $1
+              AND ($2::transfer_status IS NULL OR status = $2)
+              AND ($3::etherscan_chain IS NULL OR chain = $3)
+              AND ($4::stablecoin_name IS NULL OR token_name = $4)
+            ORDER BY created_at DESC
+            LIMIT $5
+            OFFSET $6
+            "#,
+            query.wallet_address,
+            query.status as Option<TransferStatus>,
+            query.chain as Option<EtherScanChain>,
+            query.token as Option<StablecoinName>,
+            query.limit,
+            query.offset,
+        )
+        .fetch_all(&self.pool)
+        .await
     }
 }
 

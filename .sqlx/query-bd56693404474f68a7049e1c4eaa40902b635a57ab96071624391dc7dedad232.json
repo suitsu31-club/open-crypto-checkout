@@ -1,0 +1,90 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            INSERT INTO trc20_pending_deposits (\"order\", token_name, user_address, wallet_address, value)\n            VALUES ($1, $2, $3, $4, $5)\n            RETURNING\n            id,\n            \"order\",\n            token_name as \"token_name: StablecoinName\",\n            user_address,\n            wallet_address,\n            value,\n            started_at,\n            last_scanned_at\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Int8"
+      },
+      {
+        "ordinal": 1,
+        "name": "order",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "token_name: StablecoinName",
+        "type_info": {
+          "Custom": {
+            "name": "stablecoin_name",
+            "kind": {
+              "Enum": [
+                "usdt",
+                "usdc",
+                "dai"
+              ]
+            }
+          }
+        }
+      },
+      {
+        "ordinal": 3,
+        "name": "user_address",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 4,
+        "name": "wallet_address",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
+        "name": "value",
+        "type_info": "Numeric"
+      },
+      {
+        "ordinal": 6,
+        "name": "started_at",
+        "type_info": "Timestamp"
+      },
+      {
+        "ordinal": 7,
+        "name": "last_scanned_at",
+        "type_info": "Timestamp"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        {
+          "Custom": {
+            "name": "stablecoin_name",
+            "kind": {
+              "Enum": [
+                "usdt",
+                "usdc",
+                "dai"
+              ]
+            }
+          }
+        },
+        "Text",
+        "Text",
+        "Numeric"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      false,
+      false,
+      false,
+      false
+    ]
+  },
+  "hash": "bd56693404474f68a7049e1c4eaa40902b635a57ab96071624391dc7dedad232"
+}
