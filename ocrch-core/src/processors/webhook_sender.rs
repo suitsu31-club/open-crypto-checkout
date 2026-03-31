@@ -87,8 +87,13 @@ impl WebhookSender {
         let mut retry_shutdown_rx = shutdown_rx.clone();
 
         let retry_handle = tokio::spawn(async move {
-            Self::retry_failed_webhooks_loop(pool, http_client, retry_config, &mut retry_shutdown_rx)
-                .await;
+            Self::retry_failed_webhooks_loop(
+                pool,
+                http_client,
+                retry_config,
+                &mut retry_shutdown_rx,
+            )
+            .await;
         });
 
         loop {

@@ -9,7 +9,7 @@ use uuid::Uuid;
 
 use super::ClientError;
 use crate::objects::create_payment::{GetOrderRequest, OrderResponse, PaymentCreatingEssential};
-use crate::signature::{SignedObject, SIGNATURE_HEADER};
+use crate::signature::{SIGNATURE_HEADER, SignedObject};
 
 /// Typed HTTP client for the Ocrch **Service API**.
 ///
@@ -48,8 +48,7 @@ impl ServiceClient {
         &self,
         payload: PaymentCreatingEssential,
     ) -> Result<OrderResponse, ClientError> {
-        let signed = SignedObject::new(payload, &self.secret)
-            .map_err(ClientError::Json)?;
+        let signed = SignedObject::new(payload, &self.secret).map_err(ClientError::Json)?;
 
         let url = self.base_url.join("/api/v1/service/orders")?;
 
@@ -67,13 +66,9 @@ impl ServiceClient {
 
     /// `POST /api/v1/service/orders/status` – get the status of an existing
     /// order.
-    pub async fn get_order_status(
-        &self,
-        order_id: Uuid,
-    ) -> Result<OrderResponse, ClientError> {
+    pub async fn get_order_status(&self, order_id: Uuid) -> Result<OrderResponse, ClientError> {
         let body = GetOrderRequest { order_id };
-        let signed = SignedObject::new(body, &self.secret)
-            .map_err(ClientError::Json)?;
+        let signed = SignedObject::new(body, &self.secret).map_err(ClientError::Json)?;
 
         let url = self.base_url.join("/api/v1/service/orders/status")?;
 

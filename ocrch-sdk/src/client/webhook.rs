@@ -27,6 +27,5 @@ pub fn verify_webhook<T: Signature>(
     body: &str,
     secret: &[u8],
 ) -> Result<T, SignatureError> {
-    SignedObject::<T>::from_header_and_body(signature_header, body.to_owned())?
-        .verify(secret)
+    SignedObject::<T>::from_header_and_body(signature_header, body.to_owned())?.verify(secret)
 }

@@ -12,7 +12,7 @@ use uuid::Uuid;
 use super::ClientError;
 use crate::objects::create_payment::OrderResponse;
 use crate::objects::user::{ChainCoinPair, PaymentDetail, SelectPaymentMethod};
-use crate::signature::{sign_url, SIGNATURE_HEADER, SIGNED_URL_HEADER};
+use crate::signature::{SIGNATURE_HEADER, SIGNED_URL_HEADER, sign_url};
 
 /// Typed HTTP client for the Ocrch **User API**.
 ///
@@ -108,10 +108,7 @@ impl UserClient {
     }
 
     /// `POST /api/v1/user/orders/{order_id}/cancel` – cancel a pending order.
-    pub async fn cancel_order(
-        &self,
-        order_id: Uuid,
-    ) -> Result<OrderResponse, ClientError> {
+    pub async fn cancel_order(&self, order_id: Uuid) -> Result<OrderResponse, ClientError> {
         let (sig, signed_url) = self.sign_headers();
 
         let url = self
@@ -131,10 +128,7 @@ impl UserClient {
 
     /// `GET /api/v1/user/orders/{order_id}/status` – poll the current order
     /// status.
-    pub async fn get_order_status(
-        &self,
-        order_id: Uuid,
-    ) -> Result<OrderResponse, ClientError> {
+    pub async fn get_order_status(&self, order_id: Uuid) -> Result<OrderResponse, ClientError> {
         let (sig, signed_url) = self.sign_headers();
 
         let url = self

@@ -122,10 +122,7 @@ impl AdminClient {
 
     /// `POST /api/v1/admin/orders/{order_id}/mark-paid` – force-mark an
     /// order as paid.
-    pub async fn mark_order_paid(
-        &self,
-        order_id: Uuid,
-    ) -> Result<AdminOrderResponse, ClientError> {
+    pub async fn mark_order_paid(&self, order_id: Uuid) -> Result<AdminOrderResponse, ClientError> {
         let url = self
             .base_url
             .join(&format!("/api/v1/admin/orders/{order_id}/mark-paid"))?;
@@ -142,10 +139,7 @@ impl AdminClient {
 
     /// `POST /api/v1/admin/orders/{order_id}/resend-webhook` – resend the
     /// order status webhook.
-    pub async fn resend_order_webhook(
-        &self,
-        order_id: Uuid,
-    ) -> Result<(), ClientError> {
+    pub async fn resend_order_webhook(&self, order_id: Uuid) -> Result<(), ClientError> {
         let url = self
             .base_url
             .join(&format!("/api/v1/admin/orders/{order_id}/resend-webhook"))?;
@@ -168,10 +162,7 @@ impl AdminClient {
 
     /// `POST /api/v1/admin/transfers/{transfer_id}/resend-webhook` – resend
     /// the unknown-transfer webhook.
-    pub async fn resend_transfer_webhook(
-        &self,
-        transfer_id: i64,
-    ) -> Result<(), ClientError> {
+    pub async fn resend_transfer_webhook(&self, transfer_id: i64) -> Result<(), ClientError> {
         let url = self.base_url.join(&format!(
             "/api/v1/admin/transfers/{transfer_id}/resend-webhook"
         ))?;
