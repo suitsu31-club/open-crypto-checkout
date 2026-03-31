@@ -48,9 +48,9 @@ const signature = signCheckoutUrl(checkoutUrl, process.env.MERCHANT_SECRET!);
 const redirectUrl = `${checkoutUrl}&sig=${encodeURIComponent(signature)}`;
 ```
 
-<Aside type="note">
+{% aside type="note" %}
 The signature covers the **full URL** (including query parameters). If you add the signature itself as a query parameter, make sure the URL you sign does **not** include the `sig` parameter — sign the base URL first, then append `sig`.
-</Aside>
+{% /aside %}
 
 ---
 
@@ -136,9 +136,9 @@ interface PaymentDetail {
 
 Display `wallet_address` and `amount` prominently. The user must send **exactly** `amount` of `stablecoin` on `blockchain` to `wallet_address`.
 
-<Aside type="caution">
+{% aside type="caution" %}
 If the user switches chains, calling this endpoint again creates a new pending deposit. All pending deposits for an order are cleaned up when one is fulfilled. Make sure your UI handles this gracefully (e.g. replace the previously shown address).
-</Aside>
+{% /aside %}
 
 ---
 

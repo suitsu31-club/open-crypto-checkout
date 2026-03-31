@@ -107,9 +107,9 @@ Select a payment method (chain + stablecoin) for an order. Creates a pending dep
 | `blockchain` | string | Selected chain |
 | `stablecoin` | string | Selected stablecoin |
 
-<Aside type="note">
+{% aside type="note" %}
 Calling this endpoint multiple times (e.g. the user switches chains) creates a new pending deposit each time. All pending deposits for the order are removed when one is fulfilled. Show the user the **latest** `wallet_address` and `amount`.
-</Aside>
+{% /aside %}
 
 **Error responses:**
 
@@ -178,9 +178,9 @@ Upgrade to a WebSocket connection and receive real-time order status updates.
 
 **Authentication:** The `Ocrch-Signed-Url` and `Ocrch-Signature` headers must be sent during the HTTP upgrade request.
 
-<Aside type="caution">
+{% aside type="caution" %}
 Browsers cannot set custom headers on WebSocket connections via the standard `WebSocket` constructor. See the [Frontend Development guide](/guides/frontend/#browser-websocket-header-limitation) for workaround strategies.
-</Aside>
+{% /aside %}
 
 #### WebSocket Protocol
 

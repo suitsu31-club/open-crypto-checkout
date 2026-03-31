@@ -19,9 +19,9 @@ Your webhook endpoint must:
 - Return HTTP `200 OK` to acknowledge receipt.
 - Respond within a reasonable timeout (a few seconds).
 
-<Aside type="caution">
+{% aside type="caution" %}
 Ocrch considers a webhook **successfully delivered only when the response status is exactly `200 OK`**. Any other status code (including `201`, `204`, `4xx`, `5xx`) is treated as a failure and triggers a retry.
-</Aside>
+{% /aside %}
 
 ## Retry Schedule
 

@@ -66,9 +66,9 @@ enabled_coins = ["USDT"]
 |-----|------|----------|-------------|
 | `secret` | string | Yes | Admin password for the Admin API. |
 
-<Aside type="tip">
+{% aside type="tip" %}
 On first startup, if `secret` does not start with `$argon2`, the server treats it as plaintext and automatically replaces it in the config file with an Argon2 hash. You can set a memorable password and let the server hash it — no external tooling required.
-</Aside>
+{% /aside %}
 
 The Admin API reads this value and verifies requests using `Ocrch-Admin-Authorization: <plaintext>` headers. The actual comparison is done against the stored Argon2 hash.
 

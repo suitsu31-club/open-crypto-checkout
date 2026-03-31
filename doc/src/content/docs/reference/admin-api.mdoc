@@ -10,9 +10,9 @@ The Admin API provides operational endpoints for monitoring and managing the pay
 **Base path:** `/api/v1/admin`  
 **Authentication:** `Ocrch-Admin-Authorization: {admin_secret}` header
 
-<Aside type="caution">
+{% aside type="caution" %}
 The admin secret is transmitted in plaintext. Always access the Admin API over HTTPS.
-</Aside>
+{% /aside %}
 
 All list endpoints support pagination with `limit` (default 20, max 200) and `offset` (default 0, max 100,000) query parameters.
 
