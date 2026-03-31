@@ -38,13 +38,6 @@ async fn health_check() -> impl IntoResponse {
     })
 }
 
-/// Ready check response.
-#[derive(Serialize)]
-struct ReadyResponse {
-    status: &'static str,
-    database: &'static str,
-}
-
 /// Run the server with graceful shutdown support.
 pub async fn run_server(router: Router, addr: SocketAddr) -> Result<(), std::io::Error> {
     let listener = TcpListener::bind(addr).await?;
