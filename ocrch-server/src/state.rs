@@ -1,7 +1,6 @@
 //! Application state shared across all request handlers.
 
 use ocrch_core::config::SharedConfig;
-use ocrch_core::entities::order_records::OrderStatus;
 use ocrch_core::events::EventSenders;
 use sqlx::PgPool;
 use tokio::sync::broadcast;
@@ -14,7 +13,6 @@ use uuid::Uuid;
 #[derive(Debug, Clone)]
 pub struct OrderStatusUpdate {
     pub order_id: Uuid,
-    pub new_status: OrderStatus,
 }
 
 /// Application state that is shared across all request handlers.

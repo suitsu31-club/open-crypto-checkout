@@ -270,14 +270,9 @@ async fn setup_event_pipeline(
     let fanout_handle = tokio::spawn(async move {
         while let Some(event) = obw_rx.recv().await {
             // Broadcast order-status changes to WebSocket clients
-            if let WebhookEvent::OrderStatusChanged {
-                order_id,
-                new_status,
-            } = &event
-            {
+            if let WebhookEvent::OrderStatusChanged { order_id, .. } = &event {
                 let _ = fanout_broadcast_tx.send(OrderStatusUpdate {
                     order_id: *order_id,
-                    new_status: *new_status,
                 });
             }
             // Forward every event to the real WebhookSender
