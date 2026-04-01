@@ -1,6 +1,6 @@
 [package]
 name = "ocrch-sdk"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 license = "Apache-2.0"
 description = "The SDK for Open Crypto Checkout, a headless cryptocurrency checkout server."
@@ -10,6 +10,9 @@ homepage = "https://ocrch.suitsu31.club/"
 
 [features]
 client = ["dep:reqwest", "dep:tokio-tungstenite", "dep:futures-util"]
+
+[package.metadata.docs.rs]
+all-features = true
 
 [dependencies]
 tokio = { workspace = true }
